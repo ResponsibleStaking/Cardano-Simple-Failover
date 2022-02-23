@@ -95,6 +95,7 @@ Check if the service is ACTIVE
 ```
 sudo systemctl status simple-cardano-failover.service
 ```
+Note: Initially the Script assumes the master is active. It will take 3 Failures until the Script will turn the Standby Producer active.
 
 8. Final check
 Check incoming connections on your failover node through:
