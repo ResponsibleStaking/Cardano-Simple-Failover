@@ -30,13 +30,13 @@ cd /opt/cardano/cnode/custom/simple-failover
 
 3. Download the files and make them executeable
 ```
-sudo wget https://raw.githubusercontent.com/ResponsibleStaking/Cardano-Simple-Failover/main/script/checkStatus.sh
-sudo wget https://raw.githubusercontent.com/ResponsibleStaking/Cardano-Simple-Failover/main/script/makeActive.sh
-sudo wget https://raw.githubusercontent.com/ResponsibleStaking/Cardano-Simple-Failover/main/script/makeStandby.sh
+wget https://raw.githubusercontent.com/ResponsibleStaking/Cardano-Simple-Failover/main/script/checkStatus.sh
+wget https://raw.githubusercontent.com/ResponsibleStaking/Cardano-Simple-Failover/main/script/makeActive.sh
+wget https://raw.githubusercontent.com/ResponsibleStaking/Cardano-Simple-Failover/main/script/makeStandby.sh
 
-sudo chmod +x checkStatus.sh
-sudo chmod +x makeActive.sh
-sudo chmod +x makeStandby.sh
+chmod +x checkStatus.sh
+chmod +x makeActive.sh
+chmod +x makeStandby.sh
 ```
 
 4. Customize the variables in makeStandby.sh
