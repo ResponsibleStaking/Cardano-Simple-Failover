@@ -1,5 +1,5 @@
 # Cardano-Simple-Failover
-Simpliest possible failover approach which purely runs on the Standby Producer Instance.
+Simplest possible failover approach which purely runs on the Standby Producer Instance.
 
 ## Disclaimer
 There is no warranty for the function of this script. Use it at your own risk. Validate proper function.
@@ -19,12 +19,12 @@ Making active and passive is done through FW rules in this approach. The idea is
 1. Preconditions - Standby Producer needs to be able to PING Master Producer
 ```
 # Run CNCLI Ping on the Standby Producer and Ping the master
-cncli ping --host YOUR-HOST-ID --port YOUR-HOST-PORT
+cncli ping --host YOUR-HOST-IP --port YOUR-HOST-PORT
 ```
 
 2. On the Standby Producer create a folder which will contain the script
 ```
-mkdir -R /opt/cardano/cnode/custom/simple-failover
+mkdir -p /opt/cardano/cnode/custom/simple-failover
 cd /opt/cardano/cnode/custom/simple-failover
 ```
 
