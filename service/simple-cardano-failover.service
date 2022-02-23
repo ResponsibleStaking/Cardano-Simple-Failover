@@ -1,0 +1,12 @@
+# /etc/systemd/system/simple-cardano-failover.service
+
+[Unit]
+Description=Simple Cardano Failover Service
+Wants=simple-cardano-failover.timer
+
+[Service]
+Type=oneshot
+ExecStart=/opt/cardano/cnode/custom/simple-failover/checkStatus.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+# /etc/systemd/system/simple-cardano-failover.timer
+# Modify the OnCalendar to reflect your schedule - default is every minute
+
+[Unit]
+Description=Heartbeat Signal Timer to Failover Server
+Requires=simple-cardano-failover.service
+
+[Timer]
+Unit=simple-cardano-failover.service
+OnCalendar=*:*:00
+AccuracySec=1
+
+[Install]
+WantedBy=timers.target

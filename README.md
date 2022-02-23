@@ -71,9 +71,24 @@ nano makeStandby.sh
 #check if the IN connections of the Standby Producer Node are going away in gLiveView
 ```
 
-6. Create a Crontab Job which triggers the code
+7. Create a Service which calls the script every minute
 ```
-crontab -u user -e
+cd /etc/systemd/system
+sudo 
+```
 
-* * * * * /opt/cardano/cnode/custom/simple-failover/checkStatus.sh
+8. Final check
+Check incoming connections on your failover node through:
+```
+cat failure.status
+cat failure.count
+netstat -antpe | grep cardano-node
+```
+When the server is active there should not be any IN connections from your relays.
+When the server is standby there should be IN connections from your relays.
+
+9. Debugging
+To see what happens you can take a look on the Logs of crontab
+```
+sudo tail -f /var/log/syslog
 ```
