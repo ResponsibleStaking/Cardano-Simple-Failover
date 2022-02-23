@@ -11,6 +11,8 @@ As soon as another PING is successful the Standby turns inactive again.
 
 Note: Ping is executed through CNCLI Ping
 
+Making active and passive is done through FW rules in this approach. The idea is that both Nodes run at any time. The standby is just blocked from propagating Blocks if the Master is working properly.
+
 
 ## Setup
 
