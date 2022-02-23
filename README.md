@@ -30,18 +30,18 @@ cd /opt/cardano/cnode/custom/simple-failover
 
 3. Download the files and make them executeable
 ```
-wget https://raw.githubusercontent.com/ResponsibleStaking/Cardano-Simple-Failover/main/script/checkStatus.sh
-wget https://raw.githubusercontent.com/ResponsibleStaking/Cardano-Simple-Failover/main/script/makeActive.sh
-wget https://raw.githubusercontent.com/ResponsibleStaking/Cardano-Simple-Failover/main/script/makeStandby.sh
+sudo wget https://raw.githubusercontent.com/ResponsibleStaking/Cardano-Simple-Failover/main/script/checkStatus.sh
+sudo wget https://raw.githubusercontent.com/ResponsibleStaking/Cardano-Simple-Failover/main/script/makeActive.sh
+sudo wget https://raw.githubusercontent.com/ResponsibleStaking/Cardano-Simple-Failover/main/script/makeStandby.sh
 
-chmod +x checkStatus.sh
-chmod +x makeActive.sh
-chmod +x makeStandby.sh
+sudo chmod +x checkStatus.sh
+sudo chmod +x makeActive.sh
+sudo chmod +x makeStandby.sh
 ```
 
 4. Customize the variables in makeStandby.sh
 ```
-nano checkStatus.sh
+sudo nano checkStatus.sh
 
 #Customize the Variables on top of the file
 MASTER_NODE_IP=1.2.3.4
@@ -56,25 +56,39 @@ MAX_FAILURE_COUNT=3
 5. Customize the makeActive and makeStandby Scripts to reflect your Setup
 ```
 #Customize makeActive to your needs
-nano makeActive.sh
+sudo nano makeActive.sh
 
 #Customize makeStandby to your needs
-nano makeStandby.sh
+sudo nano makeStandby.sh
 ```
 
 6. Validate function of makeActive and makeStandby
 ```
-./makeStandby.sh
+sudo ./makeStandby.sh
 #check if the IN connections of the Standby Producer Node are going away in gLiveView
 
-./makeActive.sh
+sudo ./makeActive.sh
 #check if the IN connections of the Standby Producer Node are going away in gLiveView
 ```
 
 7. Create a Service which calls the script every minute
 ```
 cd /etc/systemd/system
-sudo 
+sudo wget https://raw.githubusercontent.com/ResponsibleStaking/Cardano-Simple-Failover/main/service/simple-cardano-failover.service
+sudo wget https://raw.githubusercontent.com/ResponsibleStaking/Cardano-Simple-Failover/main/service/simple-cardano-failover.timer
+```
+If you customized the paths you need to change them in failover-cardano.service as well
+Then enable the Service
+```
+sudo systemctl enable simple-cardano-failover.service
+sudo systemctl start simple-cardano-failover.service
+
+sudo systemctl enable simple-cardano-failover.timer
+sudo systemctl start simple-cardano-failover.timer
+```
+Check if the service is ACTIVE
+```
+sudo systemctl status failover-cardano.service
 ```
 
 8. Final check
@@ -90,5 +104,5 @@ When the server is standby there should be IN connections from your relays.
 9. Debugging
 To see what happens you can take a look on the Logs of crontab
 ```
-sudo tail -f /var/log/syslog
+sudo journalctl -u simple-cardano-failover -b
 ```
