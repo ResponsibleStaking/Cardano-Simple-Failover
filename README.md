@@ -17,7 +17,7 @@ Making active and passive is done through FW rules in this approach. The idea is
 
 CNCLI Ping is not validating if the node is in sync, just if it is able to communicate.
 This means: If the Master Producer comes back online, the Standby Producer will move to standby while the Master Producer still might be syncing
-This is only a problem if the Master Producer is down for a longer time period.
+This is only a problem if the Master Producer is down for a longer time period. To compensate this issue the Standby stays active for 10 Intervals even if the master is OK again.
 
 ## Setup
 

@@ -21,10 +21,10 @@ if [ ! -f "$counterFilePath" ]; then
     echo "0">$counterFilePath
 fi
 
-counterOkFilePath="$SCRIPT_ROOT/ok.count"
+counterOkFilePath="$SCRIPT_ROOT/failure.okcount"
 if [ ! -f "$counterOkFilePath" ]; then
     echo "Initializing ok counter file"
-    echo "10">$counterOkFilePath
+    echo "$MIN_OK_COUNT">$counterOkFilePath
 fi
 
 #Initialize Status file if not exists
@@ -70,24 +70,25 @@ if [ "$pingResult" = "ok" ]; then
 else
   echo "master is not OK, increasing count and check if stepping in is required"
 
-  #Increase failure count (read, increase, write)
-  failureCount=$(cat $counterFilePath)
-  failureCount=$(expr $failureCount + 1)
-  echo "$failureCount">$counterFilePath
-  echo "new failureCount: $failureCount"
-
   #Setting OK counter to 0 to make it count from 0 once master comes up again
   echo "0">$counterOkFilePath
 
+  #Read failure count
+  failureCount=$(cat $counterFilePath)
+
   #If failure count > maximum failure Count
-  if [ "$failureCount" -gt "$MAX_FAILURE_COUNT" ]; then
+  if [ "$failureCount" -ge "$MAX_FAILURE_COUNT" ]; then
 
     #Step in (open up network connections
-    echo "New failure count exceeds max Failure Count - setting newStatus to active"
+    echo "Failure count exceeds max Failure Count - setting newStatus to active"
     newStatus="active"
 
   else
   #Else (maximum failure count not reached, wait)
+    #Increase failure count (read, increase, write)
+    failureCount=$(expr $failureCount + 1)
+    echo "$failureCount">$counterFilePath
+    echo "new failureCount: $failureCount"
 
     #Make passive again
     echo "New failure count does not exceed max Failure Count - keep newStatus on standby"
