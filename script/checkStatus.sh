@@ -68,9 +68,7 @@ if [ "$pingResult" = "ok" ]; then
 
 #Master is not OK
 else
-  echo "master is not OK, increasing count and check if stepping in is required"
-
-  #Setting OK counter to 0 to make it count from 0 once master comes up again
+  echo "master is not OK, resetting OK count and increasing failure count and check if stepping in is required"
   echo "0">$counterOkFilePath
 
   #Read failure count
@@ -80,19 +78,20 @@ else
   if [ "$failureCount" -ge "$MAX_FAILURE_COUNT" ]; then
 
     #Step in (open up network connections
-    echo "Failure count $failureCount exceeds max Failure Count $MAX_FAILURE_COUNT - setting newStatus to active"
+    echo "Failure count $failureCount reached max Failure Count $MAX_FAILURE_COUNT - setting newStatus to active"
     newStatus="active"
 
   else
   #Else (maximum failure count not reached, wait)
-    #Increase failure count (read, increase, write)
-    echo "New failure count $failureCount does not exceed max Failure Count $MAX_FAILURE_COUNT - keep newStatus on standby"
 
+    echo "New failure count $failureCount not reached max Failure Count $MAX_FAILURE_COUNT - keep newStatus on standby"
+
+    #Increase and store failure count (read, increase, write)
     failureCount=$(expr $failureCount + 1)
     echo "$failureCount">$counterFilePath
-    echo "new failureCount: $failureCount"
+    echo "new failureCount for next check: $failureCount"
 
-    #Keep passive  
+    #Keep passive
     newStatus="standby"
   fi
 fi
