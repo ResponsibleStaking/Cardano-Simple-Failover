@@ -80,18 +80,19 @@ else
   if [ "$failureCount" -ge "$MAX_FAILURE_COUNT" ]; then
 
     #Step in (open up network connections
-    echo "Failure count exceeds max Failure Count - setting newStatus to active"
+    echo "Failure count $failureCount exceeds max Failure Count $MAX_FAILURE_COUNT - setting newStatus to active"
     newStatus="active"
 
   else
   #Else (maximum failure count not reached, wait)
     #Increase failure count (read, increase, write)
+    echo "New failure count $failureCount does not exceed max Failure Count $MAX_FAILURE_COUNT - keep newStatus on standby"
+
     failureCount=$(expr $failureCount + 1)
     echo "$failureCount">$counterFilePath
     echo "new failureCount: $failureCount"
 
-    #Make passive again
-    echo "New failure count does not exceed max Failure Count - keep newStatus on standby"
+    #Keep passive  
     newStatus="standby"
   fi
 fi
