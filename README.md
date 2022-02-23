@@ -2,7 +2,7 @@
 Simpliest possible failover approach which purely runs on the Standby Producer Instance.
 
 ## Disclaimer
-There is no warranty for the function of this script. Use it on your on risk. Validate proper function.
+There is no warranty for the function of this script. Use it at your own risk. Validate proper function.
 
 ## How it works?
 The Standby Producer Node pings the Master Producer Node every Minute.
