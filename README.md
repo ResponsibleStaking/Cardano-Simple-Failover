@@ -1,6 +1,9 @@
 # Cardano-Simple-Failover
 Simpliest possible failover approach which purely runs on the Standby Producer Instance.
 
+## Disclaimer
+There is no warranty for the function of this script. Use it on your on risk. Validate proper function.
+
 ## How it works?
 The Standby Producer Node pings the Master Producer Node every Minute.
 If the PING is not successful for several times the Standby is activating itself.
