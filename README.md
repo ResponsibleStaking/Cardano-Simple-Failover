@@ -56,10 +56,10 @@ MAX_FAILURE_COUNT=3
 5. Customize the makeActive and makeStandby Scripts to reflect your Setup
 ```
 #Customize makeActive to your needs
-sudo nano makeActive.sh
+nano makeActive.sh
 
 #Customize makeStandby to your needs
-sudo nano makeStandby.sh
+nano makeStandby.sh
 ```
 
 6. Validate function of makeActive and makeStandby
@@ -88,7 +88,7 @@ sudo systemctl start simple-cardano-failover.timer
 ```
 Check if the service is ACTIVE
 ```
-sudo systemctl status failover-cardano.service
+sudo systemctl status simple-cardano-failover.service
 ```
 
 8. Final check
