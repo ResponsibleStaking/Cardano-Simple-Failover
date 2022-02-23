@@ -9,7 +9,6 @@ As soon as another PING is successful the Standby turns inactive again.
 Note: Ping is executed through CNCLI Ping
 
 
-
 ## Setup
 
 1. Preconditions - Standby Producer needs to be able to PING Master Producer
@@ -18,7 +17,7 @@ Note: Ping is executed through CNCLI Ping
 cncli ping --host YOUR-HOST-ID --port YOUR-HOST-PORT
 ```
 
-2. Create a folder which will contain the script
+2. On the Standby Producer create a folder which will contain the script
 ```
 mkdir -R /opt/cardano/cnode/custom/simple-failover
 cd /opt/cardano/cnode/custom/simple-failover
@@ -56,6 +55,15 @@ nano makeActive.sh
 
 #Customize makeStandby to your needs
 nano makeStandby.sh
+```
+
+6. Validate function of makeActive and makeStandby
+```
+./makeStandby.sh
+#check if the IN connections of the Standby Producer Node are going away in gLiveView
+
+./makeActive.sh
+#check if the IN connections of the Standby Producer Node are going away in gLiveView
 ```
 
 6. Create a Crontab Job which triggers the code
