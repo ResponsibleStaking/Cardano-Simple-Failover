@@ -8,6 +8,7 @@ CNCLI_SCRIPT=/home/markus/.cargo/bin/cncli
 SCRIPT_ROOT=/opt/cardano/cnode/custom/simple-failover
 
 MAX_FAILURE_COUNT=3
+MIN_OK_COUNT=10
 
 ######################################
 # Do NOT modify code below           #
@@ -16,8 +17,14 @@ MAX_FAILURE_COUNT=3
 #Initialize Counter file if not exists
 counterFilePath="$SCRIPT_ROOT/failure.count"
 if [ ! -f "$counterFilePath" ]; then
-    echo "Initializing counter file"
+    echo "Initializing failure counter file"
     echo "0">$counterFilePath
+fi
+
+counterOkFilePath="$SCRIPT_ROOT/ok.count"
+if [ ! -f "$counterOkFilePath" ]; then
+    echo "Initializing ok counter file"
+    echo "10">$counterOkFilePath
 fi
 
 #Initialize Status file if not exists
@@ -38,9 +45,26 @@ echo "pingResult: $pingResult"
 #Check if Master is OK
 if [ "$pingResult" = "ok" ]; then
   #Reset failure counter to 0
-  echo "master is OK, setting counter to 0 and newStatus to standby"
+  echo "master is OK, setting failure counter to 0 and newStatus to standby"
   echo "0">$counterFilePath
-  newStatus="standby"
+
+  #Read OK Count
+  okCount=$(cat $counterOkFilePath)
+
+  if [ "$okCount" -ge "$MIN_OK_COUNT" ]; then
+    #Master is up for enough intervals, going to standby
+    echo "OkCount: $okCount >= $MIN_OK_COUNT -> going to standby"
+    newStatus="standby"
+  else
+    #Waiting until master is up for enough intervals, staing active
+    echo "OkCount: $okCount < $MIN_OK_COUNT -> staying active a little longer"
+
+    #Increment OK Counter
+    okCount=$(expr $okCount + 1)
+    echo "$okCount">$counterOkFilePath
+    echo "new okCount: $okCount"
+    newStatus="active"
+  fi
 
 #Master is not OK
 else
@@ -52,6 +76,8 @@ else
   echo "$failureCount">$counterFilePath
   echo "new failureCount: $failureCount"
 
+  #Setting OK counter to 0 to make it count from 0 once master comes up again
+  echo "0">$counterOkFilePath
 
   #If failure count > maximum failure Count
   if [ "$failureCount" -gt "$MAX_FAILURE_COUNT" ]; then

@@ -13,6 +13,11 @@ Note: Ping is executed through CNCLI Ping
 
 Making active and passive is done through FW rules in this approach. The idea is that both Nodes run at any time. The standby is just blocked from propagating Blocks if the Master is working properly.
 
+## Known Limitations
+
+CNCLI Ping is not validating if the node is in sync, just if it is able to communicate.
+This means: If the Master Producer comes back online, the Standby Producer will move to standby while the Master Producer still might be syncing
+This is only a problem if the Master Producer is down for a longer time period.
 
 ## Setup
 
