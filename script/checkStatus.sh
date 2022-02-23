@@ -44,8 +44,7 @@ echo "pingResult: $pingResult"
 
 #Check if Master is OK
 if [ "$pingResult" = "ok" ]; then
-  #Reset failure counter to 0
-  echo "master is OK, setting failure counter to 0 and newStatus to standby"
+  echo "master is OK, resetting Failure counter and set newStatus to standby if OK counter is reached"
   echo "0">$counterFilePath
 
   #Read OK Count
@@ -53,12 +52,11 @@ if [ "$pingResult" = "ok" ]; then
 
   if [ "$okCount" -ge "$MIN_OK_COUNT" ]; then
     #Master is up for enough intervals, going to standby
-    echo "OkCount: $okCount >= $MIN_OK_COUNT -> going to standby"
+    echo "Ok count $okCount reached MIN_OK_COUNT $MIN_OK_COUNT - setting newStatus to standby"
     newStatus="standby"
   else
     #Waiting until master is up for enough intervals, staing active
-    echo "OkCount: $okCount < $MIN_OK_COUNT -> staying active a little longer"
-
+    echo "OkCount: $okCount not reached MIN_OK_COUNT $MIN_OK_COUNT - keep newStatus on active"
     #Increment OK Counter
     okCount=$(expr $okCount + 1)
     echo "$okCount">$counterOkFilePath
@@ -74,24 +72,17 @@ else
   #Read failure count
   failureCount=$(cat $counterFilePath)
 
-  #If failure count > maximum failure Count
   if [ "$failureCount" -ge "$MAX_FAILURE_COUNT" ]; then
-
     #Step in (open up network connections
     echo "Failure count $failureCount reached max Failure Count $MAX_FAILURE_COUNT - setting newStatus to active"
     newStatus="active"
-
   else
-  #Else (maximum failure count not reached, wait)
-
-    echo "New failure count $failureCount not reached max Failure Count $MAX_FAILURE_COUNT - keep newStatus on standby"
-
+    #Else (maximum failure count not reached, wait)
+    echo "Failure count $failureCount not reached max Failure Count $MAX_FAILURE_COUNT - keep newStatus on standby"
     #Increase and store failure count (read, increase, write)
     failureCount=$(expr $failureCount + 1)
     echo "$failureCount">$counterFilePath
     echo "new failureCount for next check: $failureCount"
-
-    #Keep passive
     newStatus="standby"
   fi
 fi
