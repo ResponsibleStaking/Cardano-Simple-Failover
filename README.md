@@ -56,6 +56,7 @@ CNCLI_SCRIPT=/home/markus/.cargo/bin/cncli
 SCRIPT_ROOT=/opt/cardano/cnode/custom/simple-failover
 
 MAX_FAILURE_COUNT=3
+MIN_OK_COUNT=10
 ```
 
 5. Customize the makeActive and makeStandby Scripts to reflect your Setup
@@ -95,7 +96,7 @@ Check if the service is ACTIVE
 ```
 sudo systemctl status simple-cardano-failover.service
 ```
-Note: Initially the Script assumes the master is active. It will take 3 Failures until the Script will turn the Standby Producer active.
+Note: Initially the Script defines an unknown status. It will take 3 Failures until the Script will turn the Standby Producer active or 10 OKs until turning the Standby Producer standby.
 
 8. Final check
 Check incoming connections on your failover node through:
