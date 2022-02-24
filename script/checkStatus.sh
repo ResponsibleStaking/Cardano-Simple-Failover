@@ -56,12 +56,12 @@ if [ "$pingResult" = "ok" ]; then
     newStatus="standby"
   else
     #Waiting until master is up for enough intervals, staing active
-    echo "OkCount: $okCount not reached MIN_OK_COUNT $MIN_OK_COUNT - keep newStatus on active"
+    echo "OkCount: $okCount not reached MIN_OK_COUNT $MIN_OK_COUNT - keep newStatus like it is at $oldStatus"
     #Increment OK Counter
     okCount=$(expr $okCount + 1)
     echo "$okCount">$counterOkFilePath
     echo "new okCount: $okCount"
-    newStatus="active"
+    newStatus="$oldStatus"
   fi
 
 #Master is not OK
@@ -78,12 +78,12 @@ else
     newStatus="active"
   else
     #Else (maximum failure count not reached, wait)
-    echo "Failure count $failureCount not reached max Failure Count $MAX_FAILURE_COUNT - keep newStatus on standby"
+    echo "Failure count $failureCount not reached max Failure Count $MAX_FAILURE_COUNT - keep newStatus like it is at $oldStatus"
     #Increase and store failure count (read, increase, write)
     failureCount=$(expr $failureCount + 1)
     echo "$failureCount">$counterFilePath
     echo "new failureCount for next check: $failureCount"
-    newStatus="standby"
+    newStatus="$oldStatus"
   fi
 fi
 

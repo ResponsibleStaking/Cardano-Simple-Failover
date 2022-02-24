@@ -7,7 +7,7 @@ There is no warranty for the function of this script. Use it at your own risk. V
 ## How it works?
 The Standby Producer Node pings the Master Producer Node every Minute.
 If the PING is not successful for several times the Standby is activating itself.
-As soon as another PING is successful the Standby turns inactive again.
+As soon as another PING is successful the Standby turns inactive again (also with some wait interval to give the master time to be synced again).
 
 Note: Ping is executed through CNCLI Ping
 
