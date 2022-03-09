@@ -113,3 +113,42 @@ To see what happens you can take a look on the Logs of crontab
 ```
 sudo journalctl -u simple-cardano-failover -b
 ```
+## Rolling Update Approach
+
+If you plan to upgrade you Nodes and therefore need to stop/restart your nodes you need to consider stopping the failover service and control the status manually during your upgrade. This way you can achieve a rolling update without downtime.
+
+1. Disable the failover service on STANDBY (STANDBY will remain standby from now on)
+```
+sudo systemctl stop simple-cardano-failover.service
+sudo systemctl disable simple-cardano-failover.service
+
+sudo systemctl stop simple-cardano-failover.timer
+sudo systemctl disable simple-cardano-failover.timer
+```
+
+2. Update STANDBY
+3. Wait until STANDBY is fully synced
+4. Call the makeActive Script manually on STANDBY (STANDBY active now)
+
+```
+/opt/cardano/cnode/custom/simple-failover/makeActive.sh
+```
+
+5. Stop Master
+It's important to stop the master immediately after the standby was triggered to be active.
+Instead both nodes would be active.
+
+6. Update MASTER Wait until MASTER is fully synced
+7. Call the makeStandby Script manually to make the STANDBY (STANDBY is standby again)
+```
+/opt/cardano/cnode/custom/simple-failover/makeStandby.sh
+```
+
+8. Enable the failover service on STANDBY
+```
+sudo systemctl enable simple-cardano-failover.service
+sudo systemctl start simple-cardano-failover.service
+
+sudo systemctl enable simple-cardano-failover.timer
+sudo systemctl start simple-cardano-failover.timer
+```
