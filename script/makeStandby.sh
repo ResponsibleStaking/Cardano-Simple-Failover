@@ -6,5 +6,5 @@ echo "--- MAKING STANDBY ---"
 #iptables -I INPUT -s YOUR-RELAY-IP -p tcp --dport YOUR-NODE-PORT -j DROP
 
 
-#If you use CNTools SendTip you can activate it on the Failover if getting Active
+#If you use CNTools SendTip you can stop it on the Failover if getting Standby
 #systemctl stop cnode-cncli-ptsendtip.service
