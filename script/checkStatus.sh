@@ -3,12 +3,15 @@
 
 MASTER_NODE_IP=1.2.3.4
 MASTER_NODE_PORT=6000
+MASTER_NODE_METRICS_PORT=12798
 
 CNCLI_SCRIPT=/home/markus/.cargo/bin/cncli
 SCRIPT_ROOT=/opt/cardano/cnode/custom/simple-failover
 
 MAX_FAILURE_COUNT=3
 MIN_OK_COUNT=10
+
+MAX_TIP_AGE=900    #in seconds: 900 = 15 Minutes, If age gets > 15 Minutes the error count will start increasing until it reached MAX_FAILURE_COUNT
 
 ######################################
 # Do NOT modify code below           #
@@ -42,8 +45,32 @@ newStatus="undetermined"
 pingResult=$($CNCLI_SCRIPT ping --host $MASTER_NODE_IP --port $MASTER_NODE_PORT | jq -r '.status')
 echo "pingResult: $pingResult"
 
+#Evaluate the masters TIP to see if it is ok as well
+currentMasterSlot=$(curl -s -m 3 http://$MASTER_NODE_IP:$MASTER_NODE_METRICS_PORT/metrics | grep cardano_node_metrics_slotNum_int | awk '{print $2}')
+echo "currentMasterSlot: $currentMasterSlot"
+
+refTip=$(expr $(date +%s) - 1591566291)
+echo "refTip: $refTip"
+
+currentMasterTipAge=$(expr $refTip - $currentMasterSlot)
+echo "currentMasterTipAge: $currentMasterTipAge"
+
+#Check if the caluclated Tip Age is valid
+if [ $currentMasterTipAge -gt 0 ]; then
+  #Check if the TIP is not too old to still be OK
+  if [ $currentMasterTipAge -le $MAX_TIP_AGE ]; then
+    tipResult="ok"
+  else
+    tipResult="nok"
+  fi
+else
+  tipResult="error"
+fi
+echo "tipResult: $tipResult"
+
+
 #Check if Master is OK
-if [ "$pingResult" = "ok" ]; then
+if [ "$pingResult" = "ok" ] && [ $tipResult = "ok" ]; then
   echo "master is OK, resetting Failure counter and set newStatus to standby if OK counter is reached"
   echo "0">$counterFilePath
 
@@ -102,6 +129,13 @@ if [ "$oldStatus" != "$newStatus" ]; then
   #Persist new status
   echo "$newStatus">$statusFilePath
 else
-
   echo "Status was not changed. no action required"
+fi
+
+#No matter if the Status was changed make sure that SendTip service is in line with the current status
+#Relevant Case: If the Standby Node crashed for any reason and was manually restarted the SendTip service would have been activated. It needs to set inline with the current node status Then
+if [ "$newStatus" = "active" ]; then
+  #systemctl start cnode-cncli-ptsendtip.service
+else
+  #systemctl stop cnode-cncli-ptsendtip.service
 fi
